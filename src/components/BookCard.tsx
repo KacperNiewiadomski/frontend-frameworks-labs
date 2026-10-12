@@ -5,13 +5,26 @@ import styles from "./BookCard.module.css";
 
 type BookCardProps = {
   book: Book;
+  onSelect: (book: Book) => void;
 };
 
-export default function BookCard({ book }: BookCardProps) {
+export default function BookCard({ book, onSelect }: BookCardProps) {
   const { title, author, year, genre, rating, price, available } = book;
 
   return (
-    <article className={styles.card}>
+    <article
+      className={styles.card}
+      role="button"
+      tabIndex={0}
+      aria-label={`Pokaż szczegóły książki ${title}`}
+      onClick={() => onSelect(book)}
+      onKeyDown={(event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          onSelect(book);
+        }
+      }}
+    >
       <h3 className={styles.title}>{title}</h3>
       <p className={styles.meta}>
         {author}, {year}
