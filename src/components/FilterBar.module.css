@@ -23,3 +23,11 @@
   width: 18px;
   height: 18px;
 }
+
+.search {
+  flex: 1 1 220px;
+}
+
+.search input {
+  width: 100%;
+}
