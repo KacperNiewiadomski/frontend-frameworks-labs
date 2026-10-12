@@ -1,5 +1,7 @@
 export type Genre = "fantastyka" | "kryminał" | "reportaż" | "informatyka";
 
+export type GenreFilter = Genre | "wszystkie";
+
 export type Book = {
   id: number;
   title: string;
