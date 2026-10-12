@@ -7,7 +7,7 @@ type BookCardProps = {
 };
 
 export default function BookCard({ book }: BookCardProps) {
-  const { title, author, year, genre, rating, price } = book;
+  const { title, author, year, genre, rating, price, available } = book;
 
   return (
     <article>
@@ -16,6 +16,11 @@ export default function BookCard({ book }: BookCardProps) {
         {author}, {year}
       </p>
       <Badge>{genre}</Badge>
+      {available ? (
+        <Badge tone="success">Dostępna</Badge>
+      ) : (
+        <Badge tone="warning">Brak w magazynie</Badge>
+      )}
       <p>Ocena: {stars(rating)}</p>
       <p>Cena: {formatPrice(price)}</p>
     </article>
