@@ -1,66 +1,59 @@
 import { useState } from "react";
-import BookDetails from "./components/BookDetails";
-import BookList from "./components/BookList";
-import FilterBar from "./components/FilterBar";
-import { books } from "./data/books";
-import type { Book, GenreFilter, SortOption } from "./types";
+import type { Todo } from "./types";
+import TodoList from "./components/TodoList";
+
+const initialTodos: Todo[] = [
+  { id: 1, text: "Przeczytać dokumentację Reacta", done: true, priority: "normalny" },
+  { id: 2, text: "Zrobić laboratorium nr 2", done: false, priority: "wysoki" },
+  { id: 3, text: "Wyjść na spacer", done: false, priority: "niski" },
+];
 
 export default function App() {
-  const [genre, setGenre] = useState<GenreFilter>("wszystkie");
-  const [onlyAvailable, setOnlyAvailable] = useState(false);
-  const [query, setQuery] = useState("");
-  const [sort, setSort] = useState<SortOption>("domyślne");
-  const [selectedBook, setSelectedBook] = useState<Book | null>(null);
+  // Stan listy zadań jest już przygotowany - dalej pracuj według scenariusza.
+  const [todos, setTodos] = useState<Todo[]>(initialTodos);
 
-  const normalizedQuery = query.trim().toLocaleLowerCase("pl-PL");
+  const addTodo = (text: string, priority: Todo["priority"]) => {
+    setTodos((prev) => [
+      ...prev,
+      {
+        id: Math.max(0, ...prev.map((todo) => todo.id)) + 1,
+        text,
+        done: false,
+        priority,
+      },
+    ]);
+  };
 
-  const filteredBooks = books.filter((book) => {
-    const matchesGenre = genre === "wszystkie" || book.genre === genre;
-    const matchesAvailability = !onlyAvailable || book.available;
-    const matchesQuery =
-      normalizedQuery === "" ||
-      book.title.toLocaleLowerCase("pl-PL").includes(normalizedQuery) ||
-      book.author.toLocaleLowerCase("pl-PL").includes(normalizedQuery);
+  const toggleTodo = (id: number) => {
+    setTodos((prev) =>
+      prev.map((todo) =>
+        todo.id === id ? { ...todo, done: !todo.done } : todo,
+      ),
+    );
+  };
 
-    return matchesGenre && matchesAvailability && matchesQuery;
-  });
+  const deleteTodo = (id: number) => {
+    setTodos((prev) => prev.filter((todo) => todo.id !== id));
+  };
 
-  const visibleBooks = [...filteredBooks].sort((firstBook, secondBook) => {
-    switch (sort) {
-      case "tytuł-rosnąco":
-        return firstBook.title.localeCompare(secondBook.title, "pl-PL");
-      case "cena-rosnąco":
-        return firstBook.price - secondBook.price;
-      case "cena-malejąco":
-        return secondBook.price - firstBook.price;
-      case "ocena-malejąco":
-        return secondBook.rating - firstBook.rating;
-      default:
-        return 0;
-    }
-  });
+  const editTodo = (id: number, text: string) => {
+    setTodos((prev) =>
+      prev.map((todo) => (todo.id === id ? { ...todo, text } : todo)),
+    );
+  };
+
+  void addTodo;
+  void toggleTodo;
+  void deleteTodo;
+  void editTodo;
+  
+  // TODO (Zadanie 3): dodaj formularz <TodoForm /> z walidacją (komponent kontrolowany)
+  // TODO (Zadanie 4): dodaj filtr <TodoFilter /> (wszystkie / aktywne / zrobione) i liczniki
 
   return (
     <>
-      <h1>📚 Katalog książek</h1>
-      {selectedBook ? (
-        <BookDetails book={selectedBook} onBack={() => setSelectedBook(null)} />
-      ) : (
-        <>
-          <FilterBar
-            genre={genre}
-            onlyAvailable={onlyAvailable}
-            query={query}
-            sort={sort}
-            onGenreChange={setGenre}
-            onOnlyAvailableChange={setOnlyAvailable}
-            onQueryChange={setQuery}
-            onSortChange={setSort}
-          />
-          <p>Znaleziono: {visibleBooks.length}</p>
-          <BookList books={visibleBooks} onBookSelect={setSelectedBook} />
-        </>
-      )}
+      <h1>✅ Lista zadań</h1>
+      <TodoList todos={todos} />
     </>
   );
 }
